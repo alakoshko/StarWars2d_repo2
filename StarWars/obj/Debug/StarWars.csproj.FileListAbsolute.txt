@@ -1,0 +1,8 @@
+C:\Users\shmac\Documents\!GB\C#2-1\L1\src\StarWars\StarWars\bin\Debug\StarWars.exe
+C:\Users\shmac\Documents\!GB\C#2-1\L1\src\StarWars\StarWars\bin\Debug\StarWars.pdb
+C:\Users\shmac\Documents\!GB\C#2-1\L1\src\StarWars\StarWars\obj\Debug\StarWars.csprojAssemblyReference.cache
+C:\Users\shmac\Documents\!GB\C#2-1\L1\src\StarWars\StarWars\obj\Debug\StarWars.Properties.Resources.resources
+C:\Users\shmac\Documents\!GB\C#2-1\L1\src\StarWars\StarWars\obj\Debug\StarWars.csproj.GenerateResource.cache
+C:\Users\shmac\Documents\!GB\C#2-1\L1\src\StarWars\StarWars\obj\Debug\StarWars.csproj.CoreCompileInputs.cache
+C:\Users\shmac\Documents\!GB\C#2-1\L1\src\StarWars\StarWars\obj\Debug\StarWars.exe
+C:\Users\shmac\Documents\!GB\C#2-1\L1\src\StarWars\StarWars\obj\Debug\StarWars.pdb
