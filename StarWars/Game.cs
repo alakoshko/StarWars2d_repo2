@@ -16,6 +16,11 @@ namespace StarWars
         /// <summary>Массив графических игровых объекотв</summary>
         private static GameObject[] __GameObjects;
 
+        private static Asteroid[] __Asteroids;
+
+        private static Bullet __Bullet;
+
+        
         /// <summary>Буфер, в который будем проводить отрисовку графики очередного кадра</summary>
         public static BufferedGraphics Buffer { get; private set; }
 
@@ -24,27 +29,78 @@ namespace StarWars
         /// <summary>Высота игрового поля</summary>
         public static int Height { get; private set; }
 
+        
+
+
+        /*static Button btnNew;
+        static Button btnRecords;
+        static Button btnExit;*/
+
         /// <summary>Загрузка данных игровой логики</summary>
-        public static void Load()
+        public static void Load(StarWarsForm form)
         {
+            Width = form.Width;
+            Height = form.Height;
+
             __GameObjects = new GameObject[30];
 
-            for (var i = 0; i < __GameObjects.Length / 2; i++)
-                __GameObjects[i] = new GameObject(
-                    new Point(600, i * 20),
-                    new Point(15 - i, 15 - i),
-                    new Size(20, 20));
+            
+            var rnd = new Random();
 
-            for (var i = __GameObjects.Length / 2; i < __GameObjects.Length; i++)
+            //Звезды
+            for (var i = 0; i < __GameObjects.Length; i++)
+            {
+                int r = rnd.Next(5, 50);
+                var size = rnd.Next(10, 30);
                 __GameObjects[i] = new Star(
-                    new Point(600, i * 20),
-                    new Point(i, 0),
-                    new Size(5, 5));
+                    new BaseObjectParams
+                    {
+                        Position = new Point(Width, (rnd.Next(0, Height) ) ),
+                        Speed = new Point(rnd.Next(0, i), 0),
+                        Size = new Size(size, size)
+                    },
+                    rnd.Next(0,5));
+            }
+
+            //Астероиды
+            const int asteroids_count = 10;
+            __Asteroids = new Asteroid[asteroids_count];
+
+            for (var i = 0; i < asteroids_count; i++)
+            {
+                var speed = rnd.Next(3, 10);
+
+                var Power = rnd.Next(Asteroid.powerMin, Asteroid.powerMax);
+                
+                __Asteroids[i] = new Asteroid(
+                    new BaseObjectParams
+                    {
+                        Position = new Point(rnd.Next(0, Width), rnd.Next(0, Height)),
+                        Speed = new Point(speed, (rnd.Next(1, speed)%2 == 0) ? -rnd.Next(1, speed): rnd.Next(1, speed)),
+                        //параметр зависит от Power
+                        Size = new Size(0, 0)
+                    },
+                    Power
+                );
+            }
+
+
+            //Пули
+            const int BulletPower = 1;
+
+            __Bullet = new Bullet(
+                new BaseObjectParams
+                {
+                    Position = new Point(0, 200),
+                    Speed = new Point(3, 0),
+                    Size = new Size(4, 1)
+                },
+                BulletPower);
         }
 
         /// <summary>Инициализация игровой логики</summary>
         /// <param name="form">Игровая форма</param>
-        public static void Init(Form form)
+        public static void Init(StarWarsForm form)
         {
             Width = form.Width;
             Height = form.Height;
@@ -56,6 +112,7 @@ namespace StarWars
 
             __Timer.Tick += OnTimerTick;
             __Timer.Enabled = true;
+
         }
 
         /// <summary>Метод, вызываемвый таймером всякий раз при истечении указанного интервала времени</summary>
@@ -80,6 +137,12 @@ namespace StarWars
             foreach (var game_object in __GameObjects)
                 game_object.Draw();
 
+            //рисуем астероиды
+            foreach (var asteroid_obj in __Asteroids)
+                asteroid_obj.Draw();
+
+            __Bullet.Draw();
+
             Buffer.Render(); // Переносим содержимое буфера на экран
         }
 
@@ -89,6 +152,40 @@ namespace StarWars
             // Пробегаемся по всем игровым объектам
             foreach (var game_object in __GameObjects)
                 game_object.Update(); // И вызываем у каждого метод обновления состояния
+
+            //Запустили пулю
+            __Bullet.Update();
+
+            Random rnd = new Random();
+
+            //Двигаем астероиды
+            for (var i = 0; i < __Asteroids.Length; i++)
+            {
+                if (__Asteroids[i].Collision(__Bullet))
+                {
+                    __Asteroids[i].Damage += __Bullet.Power();
+                    //__Bullet = null;
+                }
+
+                if (__Asteroids[i].Power <= 0)
+                {
+                    var speed = rnd.Next(3, 10);
+                    var Power = rnd.Next(Asteroid.powerMin, Asteroid.powerMax);
+
+                    __Asteroids[i] = new Asteroid(
+                        new BaseObjectParams
+                        {
+                            Position = new Point(rnd.Next(0, Width), rnd.Next(0, Height)),
+                            Speed = new Point(speed, (rnd.Next(1, speed) % 2 == 0) ? -rnd.Next(1, speed) : rnd.Next(1, speed)),
+                            //параметр зависит от Power
+                            Size = new Size(0, 0)
+                        },
+                        Power
+                    );
+                }
+                __Asteroids[i].Update();
+            }
+            
         }
     }
 }
