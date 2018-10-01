@@ -27,3 +27,4 @@ D:\Документы\GitHub\StarWars2d_repo2\StarWars\obj\Debug\StarWars.exe
 D:\Документы\GitHub\StarWars2d_repo2\StarWars\obj\Debug\StarWars.pdb
 D:\Документы\GitHub\StarWars2d_repo2\StarWars\obj\Debug\StarWars.StarWarsForm.resources
 D:\Документы\GitHub\StarWars2d_repo2\StarWars\obj\Debug\StarWars.StarWarsForm_Setup.resources
+D:\Документы\GitHub\StarWars2d_repo2\StarWars\obj\Debug\StarWars.csprojAssemblyReference.cache
