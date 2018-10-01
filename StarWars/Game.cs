@@ -11,16 +11,18 @@ namespace StarWars
         private static BufferedGraphicsContext __Context;
 
         /// <summary>Таймер обновления игрового интерфейса</summary>
-        private static readonly Timer __Timer = new Timer { Interval = 100 };
+        public static readonly Timer __Timer = new Timer { Interval = 100 };
 
         /// <summary>Массив графических игровых объекотв</summary>
         private static GameObject[] __GameObjects;
 
         private static Asteroid[] __Asteroids;
 
-        private static Bullet __Bullet;
+        //private static Bullet __BulletCenter, __BulletLeft, __BulletRight;
+        private static Bullet[] __Bullets = new Bullet[3];
 
-        
+        private static Ship __Ship;
+
         /// <summary>Буфер, в который будем проводить отрисовку графики очередного кадра</summary>
         public static BufferedGraphics Buffer { get; private set; }
 
@@ -29,25 +31,17 @@ namespace StarWars
         /// <summary>Высота игрового поля</summary>
         public static int Height { get; private set; }
 
-        
-
-
-        /*static Button btnNew;
-        static Button btnRecords;
-        static Button btnExit;*/
+        private const int BulletPower = 1;
 
         /// <summary>Загрузка данных игровой логики</summary>
-        public static void Load(StarWarsForm form)
+        public static void Load()
         {
-            Width = form.Width;
-            Height = form.Height;
-
             __GameObjects = new GameObject[30];
 
-            
             var rnd = new Random();
 
             //Звезды
+            #region
             for (var i = 0; i < __GameObjects.Length; i++)
             {
                 int r = rnd.Next(5, 50);
@@ -61,8 +55,10 @@ namespace StarWars
                     },
                     rnd.Next(0,5));
             }
+            #endregion
 
             //Астероиды
+            #region
             const int asteroids_count = 10;
             __Asteroids = new Asteroid[asteroids_count];
 
@@ -75,39 +71,53 @@ namespace StarWars
                 __Asteroids[i] = new Asteroid(
                     new BaseObjectParams
                     {
-                        Position = new Point(rnd.Next(0, Width), rnd.Next(0, Height)),
-                        Speed = new Point(speed, (rnd.Next(1, speed)%2 == 0) ? -rnd.Next(1, speed): rnd.Next(1, speed)),
-                        //параметр зависит от Power
-                        Size = new Size(0, 0)
+                        Position = new Point(rnd.Next(Width/2, Width), rnd.Next(0, Height)),
+                        Speed = new Point(speed, (rnd.Next(1, speed)%2 == 0) ? -rnd.Next(1, speed): rnd.Next(1, speed))
                     },
                     Power
                 );
             }
+            #endregion
 
+            
 
-            //Пули
-            const int BulletPower = 1;
-
-            __Bullet = new Bullet(
+            //Космический корабль
+            #region
+            __Ship = new Ship(
                 new BaseObjectParams
                 {
-                    Position = new Point(0, 200),
-                    Speed = new Point(3, 0),
-                    Size = new Size(4, 1)
-                },
-                BulletPower);
+                    Position = new Point(10, 400),
+                    Speed = new Point(5, 5),
+                    Size = new Size(150, 150)
+                } );
+
+            __Ship.ShipDie += OnShipDie;
+            #endregion
+        }
+
+        private static void OnShipDie()
+        {
+            __Timer.Enabled = false;
+            __Ship = null;
+            var g = Buffer.Graphics;
+            g.Clear(Color.Black);
+            g.DrawString("Вы проиграли!", new Font(FontFamily.GenericSansSerif, 60, FontStyle.Underline), Brushes.White, 200, 100);
+            Buffer.Render();
         }
 
         /// <summary>Инициализация игровой логики</summary>
         /// <param name="form">Игровая форма</param>
+        //public static void Init(StarWarsForm form)
         public static void Init(StarWarsForm form)
         {
             Width = form.Width;
             Height = form.Height;
+            form.KeyDown += OnGameFormKeyPress;
 
             __Context = BufferedGraphicsManager.Current;
 
-            var graphics = form.CreateGraphics();
+            //var graphics = form.CreateGraphics();
+            var graphics = form.CreateGameGraphicObject();
             Buffer = __Context.Allocate(graphics, new Rectangle(0, 0, Width, Height));
 
             __Timer.Tick += OnTimerTick;
@@ -115,12 +125,39 @@ namespace StarWars
 
         }
 
+
         /// <summary>Метод, вызываемвый таймером всякий раз при истечении указанного интервала времени</summary>
         private static void OnTimerTick(object Sender, EventArgs e)
         {
             Update();
             Draw();
         }
+
+        public static void OnGameFormKeyPress(object Sender, KeyEventArgs args)
+        {
+            if (__Timer.Enabled)
+            {
+                switch (args.KeyCode)
+                {
+                    case Keys.ControlKey:
+                        //var ship_location = __Ship.Rect.Location;
+                        __Bullets[0] = new Bullet( new BaseObjectParams { Position = new Point(__Ship.CenterWeapon.X, __Ship.CenterWeapon.Y) }, BulletPower);
+                        __Bullets[1] = new Bullet(new BaseObjectParams { Position = new Point(__Ship.LeftWeapon.X, __Ship.LeftWeapon.Y) }, BulletPower);
+                        __Bullets[2] = new Bullet(new BaseObjectParams { Position = new Point(__Ship.RightWeapon.X, __Ship.RightWeapon.Y) }, BulletPower);
+                        break;
+                    case Keys.Up:
+                        __Ship?.Up();
+                        break;
+                    case Keys.Down:
+                        __Ship?.Down();
+                        break;
+                    case Keys.W:
+                        __Ship?.Die();
+                        break;
+                }
+            }
+        }
+
 
         /// <summary>Метод отрисовки очередного кадра игры</summary>
         public static void Draw()
@@ -140,8 +177,13 @@ namespace StarWars
             //рисуем астероиды
             foreach (var asteroid_obj in __Asteroids)
                 asteroid_obj.Draw();
+            
+            //рисуем пули
+            for (int iBullet = 0; iBullet < __Bullets.Length; iBullet++)
+                __Bullets[iBullet]?.Draw();
 
-            __Bullet.Draw();
+            //корабль
+            __Ship?.Draw(); // if(__Ship != null) __Ship.Draw();
 
             Buffer.Render(); // Переносим содержимое буфера на экран
         }
@@ -153,37 +195,50 @@ namespace StarWars
             foreach (var game_object in __GameObjects)
                 game_object.Update(); // И вызываем у каждого метод обновления состояния
 
-            //Запустили пулю
-            __Bullet.Update();
+            //Запустили пули
+            for (int iBullet = 0; iBullet < __Bullets.Length; iBullet++)
+                __Bullets[iBullet]?.Update();
+           
 
-            Random rnd = new Random();
+                Random rnd = new Random();
 
             //Двигаем астероиды
             for (var i = 0; i < __Asteroids.Length; i++)
             {
-                if (__Asteroids[i].Collision(__Bullet))
+                for (int iBullet = 0; iBullet < __Bullets.Length; iBullet++)
                 {
-                    __Asteroids[i].Damage += __Bullet.Power();
-                    //__Bullet = null;
+                    if (__Bullets[iBullet] != null && __Asteroids[i].Collision(__Bullets[iBullet]))
+                    {
+                        __Asteroids[i].Damage += __Bullets[iBullet].Power();
+                        __Bullets[iBullet] = null;
+                    }
                 }
 
                 if (__Asteroids[i].Power <= 0)
                 {
-                    var speed = rnd.Next(3, 10);
-                    var Power = rnd.Next(Asteroid.powerMin, Asteroid.powerMax);
+                    //var speed = rnd.Next(3, 10);
+                    //var Power = rnd.Next(Asteroid.powerMin, Asteroid.powerMax);
 
-                    __Asteroids[i] = new Asteroid(
-                        new BaseObjectParams
-                        {
-                            Position = new Point(rnd.Next(0, Width), rnd.Next(0, Height)),
-                            Speed = new Point(speed, (rnd.Next(1, speed) % 2 == 0) ? -rnd.Next(1, speed) : rnd.Next(1, speed)),
-                            //параметр зависит от Power
-                            Size = new Size(0, 0)
-                        },
-                        Power
-                    );
+                    //__Asteroids[i] = new Asteroid(
+                    //    new BaseObjectParams
+                    //    {
+                    //        Position = new Point(rnd.Next(0, Width), rnd.Next(0, Height)),
+                    //        Speed = new Point(speed, (rnd.Next(1, speed) % 2 == 0) ? -rnd.Next(1, speed) : rnd.Next(1, speed))
+                    //    },
+                    //    Power
+                    //);
+                    __Asteroids[i] = null;
                 }
-                __Asteroids[i].Update();
+                __Asteroids[i]?.Update();
+
+                //Корабль
+                if (__Ship != null && __Ship.Collision(__Asteroids[i]))
+                {
+                    if(__Asteroids[i] != null)
+                        __Ship.Energy -= __Asteroids[i].Power;
+                    if (__Ship.Energy <= 0)
+                        __Ship.Die();
+                }
             }
             
         }

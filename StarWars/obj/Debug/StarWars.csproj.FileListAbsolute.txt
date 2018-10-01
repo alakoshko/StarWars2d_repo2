@@ -16,3 +16,14 @@ D:\Документы\Персональное\Дистанционное обу
 D:\Документы\Персональное\Дистанционное обучение\Антон\С#\geekbrains.ru\c# 02\Lesson01\дубль2\StarWars[2018-09-20 11-58-53]\StarWars\StarWars\obj\Debug\StarWars.LoginWindow.resources
 D:\Документы\Персональное\Дистанционное обучение\Антон\С#\geekbrains.ru\c# 02\Lesson01\дубль2\StarWars[2018-09-20 11-58-53]\StarWars\StarWars\obj\Debug\StarWars.SplashScreen.resources
 D:\Документы\Персональное\Дистанционное обучение\Антон\С#\geekbrains.ru\c# 02\Lesson01\дубль2\StarWars[2018-09-20 11-58-53]\StarWars\StarWars\obj\Debug\StarWars.csprojAssemblyReference.cache
+D:\Документы\GitHub\StarWars2d_repo2\StarWars\bin\Debug\StarWars.exe
+D:\Документы\GitHub\StarWars2d_repo2\StarWars\bin\Debug\StarWars.pdb
+D:\Документы\GitHub\StarWars2d_repo2\StarWars\obj\Debug\StarWars.LoginWindow.resources
+D:\Документы\GitHub\StarWars2d_repo2\StarWars\obj\Debug\StarWars.Properties.Resources.resources
+D:\Документы\GitHub\StarWars2d_repo2\StarWars\obj\Debug\StarWars.SplashScreen.resources
+D:\Документы\GitHub\StarWars2d_repo2\StarWars\obj\Debug\StarWars.csproj.GenerateResource.cache
+D:\Документы\GitHub\StarWars2d_repo2\StarWars\obj\Debug\StarWars.csproj.CoreCompileInputs.cache
+D:\Документы\GitHub\StarWars2d_repo2\StarWars\obj\Debug\StarWars.exe
+D:\Документы\GitHub\StarWars2d_repo2\StarWars\obj\Debug\StarWars.pdb
+D:\Документы\GitHub\StarWars2d_repo2\StarWars\obj\Debug\StarWars.StarWarsForm.resources
+D:\Документы\GitHub\StarWars2d_repo2\StarWars\obj\Debug\StarWars.StarWarsForm_Setup.resources

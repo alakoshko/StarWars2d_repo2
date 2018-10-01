@@ -17,11 +17,11 @@ namespace StarWars
 
 
             #region Запуск игры
-            Application.Run(new SplashScreen());
+            //Application.Run(new SplashScreen());
 
-            var login_window = new LoginWindow();
-            Application.Run(login_window);
-            var user_name = login_window.UserNameTextBox.Text;
+            //var login_window = new LoginWindow();
+            //Application.Run(login_window);
+            //var user_name = login_window.UserNameTextBox.Text;
 
             #endregion
 
@@ -29,14 +29,18 @@ namespace StarWars
             #region Игровая логика
             // Создаём главную форму
             StarWarsForm game_form = new StarWarsForm
+            //Form game_form = new Form
             {
                 Width = 1024,
+                //Width = ,
                 Height = 768,
                 FormBorderStyle = FormBorderStyle.FixedSingle // Запрещаем ей менять свои размеры
             };
-            
-            Game.Load(game_form);  // Загрузка данных игровой логики
+
             Game.Init(game_form);  // Инициализация игровой логики
+            Game.Load();  // Загрузка данных игровой логики
+                          
+        
 
             game_form.Show();      // Показываем форму на экране
 
